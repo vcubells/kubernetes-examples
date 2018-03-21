@@ -8,5 +8,4 @@ Le recomiendo consultar el documento [Kubernetes on MacOS with Minikube](https:/
 ## Listado de ejemplos
 
 - [Aplicación compuesta por una base de datos de InfluxDB y la herramienta de visualización Grafana](grafana-influxdb)
-- [Aplicación compuesta por un proxy Nginx, una API desarrollada en Flask y una base de datos MongoDB](nginx-flask-mongodb)
-- 
+- [Aplicación compuesta por un proxy Nginx, una API desarrollada en Flask, manejo de sesiones con Redis y una base de datos MongoDB](nginx-flask-redis-mongodb)
