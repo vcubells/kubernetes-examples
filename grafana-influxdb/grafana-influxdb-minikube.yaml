@@ -1,0 +1,147 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: grafana-pv-claim
+  labels:
+    app: demo
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: influxdb-pv-claim
+  labels:
+    app: demo
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  labels:
+    app: grafana
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 3000
+      targetPort: 3000
+  selector:
+    app: grafana
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: influxdb
+  labels:
+    app: influxdb
+spec:
+  ports:
+    - port: 8086
+  selector:
+    app: influxdb
+  type: NodePort
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: influxdb
+  labels:
+    app: influxdb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: influxdb
+  template:
+    metadata:
+      labels:
+        app: influxdb
+    spec:
+      containers:
+        - name: influxdb
+          image: influxdb:latest
+          env:
+          - name: INFLUXDB_HTTP_AUTH_ENABLED
+            value: "false"
+          - name: INFLUXDB_DATA_ENGINE
+            value: "tsm1"
+          - name: INFLUXDB_REPORTING_DISABLED
+            value: "false"
+          - name: INFLUXDB_DB
+            value: "test"
+          ports:
+            - containerPort: 8086
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /var/lib/influxdb
+              name: influxdb-ps
+      volumes:
+        - name: influxdb-ps
+          persistentVolumeClaim:
+            claimName: influxdb-pv-claim
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  labels:
+    app: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+        - name: grafana
+          image: grafana/grafana:latest
+          env:
+          - name: INFLUXDB_HOST
+            value: influxdb
+          - name: GF_SERVER_HTTP_PORT
+            value: "3000"
+          - name: GF_USERS_ALLOW_SIGN_UP
+            value: "false"
+          - name: GF_USERS_ALLOW_ORG_CREATE
+            value: "false"
+          - name: GF_AUTH_ANONYMOUS_ENABLED
+            value: "true"
+          - name: GF_SERVER_ROOT_URL
+            value: / 
+          - name: GF_INSTALL_PLUGINS
+            value: "grafana-clock-panel,briangann-gauge-panel,natel-plotly-panel,grafana-simple-json-datasource,grafana-worldmap-panel,grafana-piechart-panel"
+
+          ports:
+          - containerPort: 3000
+            protocol: TCP
+          volumeMounts:
+            - mountPath: /var/lib/grafana
+              name: grafana-ps
+      volumes:
+        - name: grafana-ps
+          persistentVolumeClaim:
+            claimName: grafana-pv-claim
