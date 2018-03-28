@@ -1,11 +1,18 @@
 # Ejemplo de una aplicación compuesta por Nginx + Flask + Redis + MongoDB utilizando Kubernetes
 
-En este ejemplo se muestra una aplicación compuesta por cuatro microservicios: un proxy [Nginx](https://nginx.org/en/), una API desarrollada en [Flask](http://flask.pocoo.org/), una base de datos [Redis](https://redis.io/) para manejo de sesiones y una base de datos en [MongoDB](https://www.mongodb.com/) para el almacenamiento persistente de la información. La aplicación se despliega en un clúster local de Kubernetes utilizando `minikube`. Cada servicio se ejecuta en su propio contenedor, y estos, se encuentran enlazados entre sí. 
+En este ejemplo se muestra una aplicación compuesta por un proxy [Nginx](https://nginx.org/en/), una API desarrollada en [Flask](http://flask.pocoo.org/), una base de datos [Redis](https://redis.io/) para manejo de sesiones y una base de datos en [MongoDB](https://www.mongodb.com/) para el almacenamiento persistente de la información. La aplicación se despliega en un clúster de Kubernetes en [Google Cloud Platform](https://cloud.google.com/). 
+
+Para Redis y MongoDB se utilizan servicios en la nube ofrecidos por [Redis Labs](https://redislabs.com/) y [mLab](https://mlab.com/) respectivamente.
 
 ## 1. Pre-requisitos
 
 * Tener instalado `docker`. Mas información se encuentra disponible en [Docker](https://www.docker.com/community-edition).
-* Tener instalado `minikube`. Le recomiendo consultar el documento [Kubernetes on MacOS with Minikube](https://docs.google.com/document/d/1KYlbHYI7gz-Hwe_f_m6Nw6aQxK5rCpeXCJDz6EGeO54/edit?usp=sharing) en el cual explico paso a paso cómo configurar el entorno de desarrollo y cómo trabajar con diferentes opciones de [Minikube](https://github.com/kubernetes/minikube).
+* Tener instalado `kubectl`. Mas información se encuentra disponible en [Install and Set Up kubectl
+](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
+* Tener una cuenta activa en [Google Cloud Platform](https://cloud.google.com/).
+* Tener una cuenta activa en Redis Labs o utilizar un servidor Redis local. Puede crear una cuenta gratuita [aquí](https://app.redislabs.com/#/sign-up/cloud).
+* Tener una cuenta activa en [mLab](https://mlab.com/) o utilizar un servidor de MongoDB local. Puede crear una cuenta gratuita [aquí](https://mlab.com/signup/).
+* Tener instalado el [Google Cloud SDK](https://cloud.google.com/sdk/).
 * Acceso a Internet.
 
 
@@ -19,49 +26,52 @@ A continuación se describen los archivos y carpetas que forman parte del proyec
 
 1. Descargue el repositorio a una carpeta de su computadora utilizando el comando `git clone`.
 2. Cámbiese a la carpeta del proyecto.
-3. Verifique que `minikube`se encuentra en ejecución con el comando:
+3. Cree un proyecto en la [Consola de Google Cloud Platform](https://console.cloud.google.com). Póngale el nombre y ID que usted prefiera.
+4. Dentro de la misma consola, en el menú de la izquierda seleccione la opción Kubernetes Engine / Clústeres de Kubernetes  y cree un nuevo clúster dentro del proyecto creado en el paso anterior.
+5. Cambie el nombre nombre del clúster, la versión del clúster a la 1.9.4-gke.1 y el tamaño del clúster a 1 nodo. Los demás valores déjelos como aparecen de manera predeterminada.
+6. Una vez creado el clúster, seleccione la opción "Ejecutar" y en la ventana que aparece, seleccione el primer commando relacionado con `kubectl`. El comando a copiar tiene una estructura similar a la siguiente:
 
-`minikube status`
+`gcloud container clusters get-credentials demo-webinar --zone us-central1-a --project webinar-199317`
 
-o si requiere iniciarlo, ejecute el comando:
+7. Ejecute el comando anterior en una terminal de su computadora.
+8. Compile la imagen del contenedor de la aplicación, sustituyendo `<PROJECT ID>` por el que le correponde. Este valor es el que aparece en el parámetro `--project` del comando ejecutado en el paso anterior:
 
-`minikube start`
+`docker build -t gcr.io/<PROJECT ID>/flask-api app/.`
 
-4. Ejecute el comando:
+9. Suba la imagen del contendor al registro de su proyecto en Google Cloud Platform:
 
-`kubectl create -f `
+`gcloud docker -- push gcr.io/<PROJECT ID>/flask-api`
 
-5. Verifique que los servicios se encuentran funcionando correctamente:
+10. Despliegue la aplicación en Google Cloud Platform:
+
+`kubectl create -f proxy-api.yaml`
+
+11. Verifique que los servicios se encuentran funcionando correctamente:
 
 `kubectl get deployment`
 `kubectl get service`
 `kubectl get pod`
 
-6. Obtenga la URL del servicio :
+12. Obtenga la URL del servicio. Ejecute varias veces este comando hasta que el valor EXTERNAL-IP se encuentre asignado:
 
-`minikube service <service> --url`
+`kubectl get service`
 
-7. Acceda a la interfaz web de la aplicación en un browser con la URL obtenida en el paso anterior, o también lo puede hacer directamente desde la terminal con el comando:
+13. Acceda a la aplicación en un browser con la IP externa obtenida en el paso anterior.
 
-`open $(minikube service <service> --url)`
+14. Para eliminar la aplicación y los servicios creados ejecute:
 
-8. Para eliminar los contenedores y los servicios creados:
+`kubectl delete  -f proxy-api.yaml`
 
-`kubectl delete  -f `
+15. Elimine el clúster desde la [Consola de Google Cloud Platform](https://console.cloud.google.com).
 
-9. Para detener `minikube`:
-
-`minikube stop` 
 
 ## 4. Recursos
 
-
-Para conocer las diferentes opciones de minikube, así como instalar y configurar el entorno de desarrollo, consulte la guía [Kubernetes on MacOS with Minikube](https://docs.google.com/document/d/1KYlbHYI7gz-Hwe_f_m6Nw6aQxK5rCpeXCJDz6EGeO54/edit?usp=sharing).
-
-Para conocer más sobre Minikube consulte la documentación oficial disponible en  [Minikube](https://github.com/kubernetes/minikube).
 
 Para conocer más sobre Kubernetes consulte la documentación oficial disponible en  [Kubernetes](https://kubernetes.io).
 
 Para aprender a trabajar con el comando `kubectl`consulte la documentación oficial disponible en [Install and Set Up kubectl
 ](
 https://kubernetes.io/docs/tasks/tools/install-kubectl/).
+
+Para conocer más sobre Google Cloud Platform consulte la documentación oficial disponible en  [GCP Documentation](https://cloud.google.com/docs/).
