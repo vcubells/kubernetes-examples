@@ -3,6 +3,7 @@ from flask_api import FlaskAPI, status, exceptions
 from models import sessions
 from datetime import datetime
 from models import notes
+from bson import ObjectId
 
 
 app = FlaskAPI(__name__)
@@ -27,12 +28,15 @@ def list():
 
         result = mongodb.create(note)
 
+        # Se adicionó para poder manejar ObjectID
+        note['_id'] = str(note['_id'])
+
         return note, status.HTTP_201_CREATED
 
     return mongodb.find()
 
 
-@app.route("/<int:key>/", methods=['GET', 'PUT', 'DELETE'])
+@app.route("/<string:key>/", methods=['GET', 'PUT', 'DELETE'])
 def notes_detail(key):
 
     mongodb = notes.Notes()

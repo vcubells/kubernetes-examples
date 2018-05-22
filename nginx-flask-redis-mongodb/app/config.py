@@ -1,11 +1,11 @@
 # --- On cloud resources ---
 # Mongo configuration
-MONGO_URI = 'mongodb://demo:IbBeghokyicHea3@ds117469.mlab.com:17469/notes'
+MONGO_URI = 'connectionString'
 
 # Redis configuration
-REDIS_HOST = 'redis-16681.c1.us-central1-2.gce.cloud.redislabs.com'
-REDIS_PORT = 16681
-REDIS_PASSWORD = 'qzLWbCsgU4XccDwbA3iG3paKqhFG6ThD'
+REDIS_HOST = 'connectionString'
+REDIS_PORT = port
+REDIS_PASSWORD = 'password'
 
 # --- Localhost resources ---
 # # Mongo configuration
@@ -14,3 +14,4 @@ REDIS_PASSWORD = 'qzLWbCsgU4XccDwbA3iG3paKqhFG6ThD'
 # # Redis configuration
 # REDIS_HOST = 'localhost'
 # REDIS_PORT = 6379
+# REDIS_PASSWORD = ''

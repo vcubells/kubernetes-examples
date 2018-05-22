@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+from bson import ObjectId
 import config
 
 class Notes(object):
@@ -18,6 +19,8 @@ class Notes(object):
         notes = []
 
         for note in cursor:
+            # Se adicionó para poder manejar ObjectID
+            note['_id'] = str(note['_id']) 
             notes.append(note)
 
         return notes
@@ -26,7 +29,11 @@ class Notes(object):
         """
         Obtener la nota con id
         """
-        note = self.collection.find_one({'_id': id})
+        note = self.collection.find_one({'_id': ObjectId(id)})
+
+        # Se adicionó para poder manejar ObjectID
+        if note is not None:
+            note['_id'] = str(note['_id'])
 
         return note
 
@@ -43,7 +50,7 @@ class Notes(object):
         """
         Eliminar una nota
         """
-        result = self.collection.delete_one({'_id': id})
+        result = self.collection.delete_one({'_id': ObjectId(id)})
 
         return result
 
@@ -51,6 +58,6 @@ class Notes(object):
         """
         Actualizar una nota
         """
-        result = self.collection.replace_one({'_id': id}, note )
+        result = self.collection.replace_one({'_id': ObjectId(id)}, note )
 
         return result

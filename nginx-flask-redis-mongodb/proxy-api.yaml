@@ -100,7 +100,12 @@ spec:
           mountPath: /etc/nginx/nginx.conf
           subPath: nginx.conf
       - name: flask-api
-        image: gcr.io/webinar-199317/flask-api
+        # GCP
+        image: gcr.io/<projectID>/flask-api
+        # IBM Cloud
+        # image: registry.ng.bluemix.net/vcn/flask-api
+        # Azure
+        # image: vcnrc.azurecr.io/flask-api
         imagePullPolicy: IfNotPresent
 
 
