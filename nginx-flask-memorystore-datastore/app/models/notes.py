@@ -1,6 +1,5 @@
 # Imports the Google Cloud client library
 from google.cloud import datastore
-#from bson import ObjectId
 import config
 
 class Notes(object):

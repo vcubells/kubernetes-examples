@@ -19,53 +19,89 @@ A continuación se describen los archivos y carpetas que forman parte del proyec
 
 - [proxy-api.yaml](proxy-api.yaml): Archivo de configuración donde se definen los servicios a ejecutar dentro del clúster de Kubernetes.
 - [app](app): Carpeta que contiene el código de la aplicación desarrollada en Flask.
-
+- [config.py](app/config.py): Archivo de configuración de la aplicación.
 
 ## 3. Instrucciones de uso
 
-1. Descargue el repositorio a una carpeta de su computadora utilizando el comando `git clone`.
-2. Cámbiese a la carpeta del proyecto.
-3. Cree un proyecto en la [Consola de Google Cloud Platform](https://console.cloud.google.com). Póngale el nombre y ID que usted prefiera.
-4. Dentro de la misma consola, en el menú de la izquierda seleccione la opción Kubernetes Engine / Clústeres de Kubernetes  y cree un nuevo clúster dentro del proyecto creado en el paso anterior.
-5. Cambie el nombre nombre del clúster, la versión del clúster a la 1.9.4-gke.1 y el tamaño del clúster a 1 nodo. Los demás valores déjelos como aparecen de manera predeterminada.
-6. Una vez creado el clúster, seleccione la opción "Ejecutar" y en la ventana que aparece, seleccione el primer commando relacionado con `kubectl`. El comando a copiar tiene una estructura similar a la siguiente:
+### Creando un proyecto
 
-`gcloud container clusters get-credentials demo-webinar --zone us-central1-a --project webinar-199317`
+1. Cree un proyecto en la [Consola de Google Cloud Platform](https://console.cloud.google.com). Póngale el nombre y ID que usted prefiera.
 
-7. Ejecute el comando anterior en una terminal de su computadora.
-8. Compile la imagen del contenedor de la aplicación, sustituyendo `<PROJECT ID>` por el que le correponde. Este valor es el que aparece en el parámetro `--project` del comando ejecutado en el paso anterior:
+### Creando una instancia de Memorystore
+
+2. Dentro de la consola, en el menú de la izquierda, seleccione la opción [Memorystore](https://console.cloud.google.com/memorystore/redis/instances) y dentro de esta **Crear instancia**.
+3. Especifique el ID de la instancia, seleccione una región y zona, por ejemplo: `us-central1-b`.
+4. Verifique que la opción **Red autorizada** aparezca con el valor *default* y seleccione el botón *Crear*.
+5. Una vez que termine de crearse al instancia, ubique en la lista que aparece la *Dirección IP* y el *Número de puerto*. Guarde estos valores porque los utilizará posteriormente. 
+
+### Creando una instancia de Datastore
+
+6. Dentro de la consola, en el menú de la izquierda, seleccione la opción [Datastore](https://console.cloud.google.com/datastore/).
+7. Ubique la opción titulada *Cloud Firestore en modo Datastore* y de clic en el ¡botón *Seleccionar*.
+8. Seleccione una región, de preferencia la misma o alguna cercana a la misma zona utilizada al crear la instancia de Memorystore.
+9. Seleccione la opción *CREAR BASE DE DATOS*.
+
+### Creando el clúster de Kubernetes
+
+10. Dentro de la misma consola, en el menú de la izquierda, seleccione la opción [Kubernetes Engine / Clústeres de Kubernetes](https://console.cloud.google.com/kubernetes) y cree un nuevo clúster dentro del mismo proyecto.
+11. Cambie el nombre del clúster y la zona. Asegúrese de seleccionar la misma región y zona que escogió en el paso 5. En este caso por ejemplo: `us-central1-b`.
+12. En el **Grupo de nodos** seleccione el botón *Edición avanzada* y desplácese hacia abajo. Asegúrese de seleccionar en **Alcance de acceso** la opción *Permitir el acceso completo a todas las API de Cloud* y seleccione el botón *Guardar*.
+13. Seleccione la opción **Opciones avanzadas** y localice la sección **Redes**. Seleccione la casilla *Habilitar la VPC nativa (mediante una IP de alias)* y deje la opción **Red** en el valor *default*.
+Los demás valores déjelos como aparecen de manera predeterminada.
+14. Una vez creado el clúster, seleccione la opción "Conectar" y en la ventana que aparece, seleccione el primer commando relacionado con `kubectl`. El comando a copiar tiene una estructura similar a la siguiente:
+
+`gcloud container clusters get-credentials cluster-vcn --zone us-central1-b --project cloudtpu-vcn`
+
+15. Ejecute el comando anterior en una terminal de su computadora.
+
+### Configurando y desplegando la aplicación
+
+16. Descargue el repositorio a una carpeta de su computadora utilizando el comando `git clone`.
+17. Cámbiese a la carpeta del proyecto.
+18. Edite el archivo [config.py](app/config.py) y sustituya los valores `REDIS_HOST`, `REDIS_PORT` y `PROJECT_ID` por los que les corresponden. Los valores de Redis son los que obtuvo en el paso 7. El valor de `PROJECT_ID es el que aparece en el parámetro `--project` del comando ejecutado en el paso anterior. Guarde todos los cambios realizados.
+19. Compile la imagen del contenedor con el siguiente comando. No olvide sustituir `<PROJECT ID>` por el valor correcto.
 
 `docker build -t gcr.io/<PROJECT ID>/flask-api app/.`
 
-9. Suba la imagen del contendor al registro de su proyecto en Google Cloud Platform:
+20. Suba la imagen del contendor al registro de su proyecto en Google Cloud Platform. No olvide sustituir `<PROJECT ID>` por el valor correcto.
 
-`gcloud docker -- push gcr.io/<PROJECT ID>/flask-api`
+`docker push gcr.io/<PROJECT ID>/flask-api`
 
-10. Despliegue la aplicación en Google Cloud Platform:
+21. Despliegue la aplicación en Google Cloud Platform:
 
-`kubectl create -f proxy-api.yaml`
+`kubectl apply -f proxy-api.yaml`
 
-11. Verifique que los servicios se encuentran funcionando correctamente:
+22. Verifique que los servicios se encuentran funcionando correctamente:
 
 `kubectl get deployment`
 `kubectl get service`
 `kubectl get pod`
 
-12. Obtenga la URL del servicio. Ejecute varias veces este comando hasta que el valor EXTERNAL-IP se encuentre asignado:
+23. Obtenga la URL del servicio. Ejecute varias veces este comando hasta que el valor `EXTERNAL-IP` se encuentre asignado:
 
 `kubectl get service`
 
-13. Acceda a la aplicación en un browser con la IP externa obtenida en el paso anterior.
+24. Acceda a la aplicación en un browser con la IP externa obtenida en el paso anterior.
 
-14. Para eliminar la aplicación y los servicios creados ejecute:
+
+## 4. Liberando los recursos
+ 
+25. Para eliminar la aplicación y los servicios creados ejecute:
 
 `kubectl delete  -f proxy-api.yaml`
 
-15. Elimine el clúster desde la [Consola de Google Cloud Platform](https://console.cloud.google.com).
+26. Desde la [Consola de Google Cloud Platform](https://console.cloud.google.com), elimine el clúster de Kubernetes.
+27. Porteriormente, elimine la instancia de Memorystore.
+28. Por último, elimine el proyecto.
 
 
-## 4. Recursos
+## 5. Recursos
 
+Para conocer más sobre Memorystore consulte la documentación oficinal disponible en [Cloud Memorystore](https://cloud.google.com/memorystore/).
+
+Para conocer más sobre Datastore consulte la documentación oficinal disponible en [Cloud Datastore](https://cloud.google.com/datastore/).
+
+Para conocer más sobre Kubernetes Engine consulte la documentación oficial disponible en  [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine/).
 
 Para conocer más sobre Kubernetes consulte la documentación oficial disponible en  [Kubernetes](https://kubernetes.io).
 

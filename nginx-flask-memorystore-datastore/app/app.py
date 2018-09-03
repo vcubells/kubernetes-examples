@@ -3,8 +3,6 @@ from flask_api import FlaskAPI, status, exceptions
 from models import sessions
 from datetime import datetime
 from models import notes
-#from bson import ObjectId
-
 
 app = FlaskAPI(__name__)
 
@@ -21,34 +19,34 @@ def list():
     redis = sessions.Sessions()
     redis.add(datetime.now())
 
-    mongodb = notes.Notes()
+    datastore = notes.Notes()
 
     if request.method == 'POST':
         note = request.data
 
-        result = mongodb.create(note)
+        result = datastore.create(note)
 
         return note, status.HTTP_201_CREATED
 
-    return mongodb.find()
+    return datastore.find()
 
 
 @app.route("/<key>/", methods=['GET', 'PUT', 'DELETE'])
 def notes_detail(key):
 
-    mongodb = notes.Notes()
+    datastore = notes.Notes()
 
     if request.method == 'PUT':
         note = request.data
-        mongodb.update(key, note)
+        datastore.update(key, note)
         return note
 
     elif request.method == 'DELETE':
-        mongodb.delete(key)
+        datastore.delete(key)
         return '', status.HTTP_204_NO_CONTENT
 
     # request.method == 'GET'
-    note =  mongodb.findOne(key)
+    note =  datastore.findOne(key)
     if not note:
         raise exceptions.NotFound()
     else:

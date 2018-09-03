@@ -15,14 +15,14 @@ class Sessions(object):
                 port=config.REDIS_PORT)
 
     def get_active_sessions(self):
-        """ Regresa las sesiones activas en Redis """
+        """ Regresa las sesiones activas en Memorystore """
 
         size = self.instance.dbsize()
 
         return size
 
     def add(self, id):
-        """ Crea una nueva sesion en Redis """
+        """ Crea una nueva sesión en Redis """
 
         result = self.instance.set(id, 1)
 
