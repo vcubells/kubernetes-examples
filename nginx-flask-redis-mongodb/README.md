@@ -20,6 +20,9 @@ Para Redis y MongoDB se utilizan servicios en la nube ofrecidos por [Redis Labs]
 
 A continuación se describen los archivos y carpetas que forman parte del proyecto, así como la función que juega cada uno de ellos:
 
+- [proxy-api.yaml](proxy-api.yaml): Archivo de configuración donde se definen los servicios a ejecutar dentro del clúster de Kubernetes.
+- [app](app): Carpeta que contiene el código de la aplicación desarrollada en Flask.
+- [config.py](app/config.py): Archivo de configuración de la aplicación.
 
 
 ## 3. Instrucciones de uso
@@ -29,7 +32,7 @@ A continuación se describen los archivos y carpetas que forman parte del proyec
 3. Cree un proyecto en la [Consola de Google Cloud Platform](https://console.cloud.google.com). Póngale el nombre y ID que usted prefiera.
 4. Dentro de la misma consola, en el menú de la izquierda seleccione la opción Kubernetes Engine / Clústeres de Kubernetes  y cree un nuevo clúster dentro del proyecto creado en el paso anterior.
 5. Cambie el nombre nombre del clúster, la versión del clúster a la 1.9.4-gke.1 y el tamaño del clúster a 1 nodo. Los demás valores déjelos como aparecen de manera predeterminada.
-6. Una vez creado el clúster, seleccione la opción "Ejecutar" y en la ventana que aparece, seleccione el primer commando relacionado con `kubectl`. El comando a copiar tiene una estructura similar a la siguiente:
+6. Una vez creado el clúster, seleccione la opción "Ejecutar" y en la ventana que aparece, seleccione el primer comando relacionado con `kubectl`. El comando a copiar tiene una estructura similar a la siguiente:
 
 `gcloud container clusters get-credentials demo-webinar --zone us-central1-a --project webinar-199317`
 
@@ -66,7 +69,6 @@ A continuación se describen los archivos y carpetas que forman parte del proyec
 
 
 ## 4. Recursos
-
 
 Para conocer más sobre Kubernetes consulte la documentación oficial disponible en  [Kubernetes](https://kubernetes.io).
 
