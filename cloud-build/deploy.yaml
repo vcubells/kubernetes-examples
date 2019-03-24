@@ -1,0 +1,44 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: demo-srv
+  labels:
+    name: demo-srv
+spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: app-http
+    protocol: TCP
+  selector:
+    name: demo-app
+  type: LoadBalancer
+        
+---
+
+apiVersion: apps/v1beta2 
+kind: Deployment
+metadata:
+  name: demo-app
+  labels:
+    name: demo-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: demo-app
+  template:
+    metadata:
+      labels:
+        name: demo-app
+    spec:
+      containers:
+      - name: app
+        # GCP
+        image: gcr.io/test-vcn/app
+        ports:
+        - name: app-http
+          containerPort: 8080
+        imagePullPolicy: Always
+
+
