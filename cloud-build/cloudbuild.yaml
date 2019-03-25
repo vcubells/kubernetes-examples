@@ -1,16 +1,16 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
-  args: ["build", "-t", "gcr.io/test-vcn/app", "."]
+  args: ["build", "-t", "gcr.io/test-ci-vcn/app", "."]
   dir: 'cloud-build'
 - name: 'gcr.io/cloud-builders/docker'
-  args: ["push", "gcr.io/test-vcn/app"]
+  args: ["push", "gcr.io/test-ci-vcn/app"]
 - name: 'gcr.io/cloud-builders/kubectl'
   args:
   - set
   - image
   - deployment
   - demo-app
-  - app=gcr.io/test-vcn/app:latest
+  - app=gcr.io/test-ci-vcn/app:latest
   env:
   - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
   - 'CLOUDSDK_CONTAINER_CLUSTER=test-cluster'

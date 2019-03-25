@@ -35,7 +35,7 @@ spec:
       containers:
       - name: app
         # GCP
-        image: gcr.io/test-vcn/app
+        image: gcr.io/test-ci-vcn/app
         ports:
         - name: app-http
           containerPort: 8080
