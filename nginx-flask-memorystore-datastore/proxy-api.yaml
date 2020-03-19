@@ -101,7 +101,7 @@ spec:
           subPath: nginx.conf
       - name: flask-api
         # GCP
-        image: gcr.io/cloudtpu-vcn/flask-api:v6
+        image: gcr.io/<PROJECT_ID>/flask-api
         # IBM Cloud
         # image: registry.ng.bluemix.net/vcn/flask-api
         # Azure

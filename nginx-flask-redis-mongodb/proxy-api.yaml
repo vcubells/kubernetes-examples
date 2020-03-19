@@ -100,8 +100,9 @@ spec:
           mountPath: /etc/nginx/nginx.conf
           subPath: nginx.conf
       - name: flask-api
+        image: gcr.io/test-vcn-249912/proxy-api
         # GCP
-        image: gcr.io/<projectID>/flask-api
+        # image: gcr.io/<projectID>/flask-api
         # IBM Cloud
         # image: registry.ng.bluemix.net/vcn/flask-api
         # Azure

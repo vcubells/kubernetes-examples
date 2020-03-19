@@ -19,7 +19,7 @@ def active_sessions():
 @app.route("/", methods=['GET', 'POST'])
 def list():
     redis = sessions.Sessions()
-    redis.add(datetime.now())
+    redis.add(1)
 
     mongodb = notes.Notes()
 
