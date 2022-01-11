@@ -14,7 +14,7 @@ grpcio==1.24.1
 gunicorn==19.9.0
 idna==2.8
 itsdangerous==1.1.0
-jinja2==2.10.3
+jinja2 ~> 2.11.3
 markupsafe==1.1.1
 protobuf==3.10.0
 pyasn1-modules==0.2.7
@@ -22,7 +22,7 @@ pyasn1==0.4.7
 pytz==2019.3
 redis==2.10.6
 requests==2.22.0
-rsa==4.0
+rsa~> 4.1
 six==1.12.0
-urllib3==1.24.2
+urllib3~> 1.26.5
 werkzeug==0.16.0
